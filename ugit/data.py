@@ -11,14 +11,14 @@ def init():
 
 
 def update_ref(ref: str, oid: str):
-    ref_path = f'{GIT_DIR}/{ref}'
+    ref_path = f"{GIT_DIR}/{ref}"
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
     with open(ref_path, "w") as f:
         f.write(oid)
 
 
 def get_ref(ref: str) -> str:
-    ref_path = f'{GIT_DIR}/{ref}'
+    ref_path = f"{GIT_DIR}/{ref}"
     if os.path.isfile(ref_path):
         with open(ref_path) as f:
             return f.read().strip()
