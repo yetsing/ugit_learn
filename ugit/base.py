@@ -81,7 +81,7 @@ def read_tree(tree_oid: str) -> None:
 def commit(message: str):
     _commit = f"tree {write_tree()}\n"
 
-    HEAD = data.get_ref('HEAD')
+    HEAD = data.get_ref("HEAD")
     if HEAD:
         _commit += f"parent {HEAD}\n"
 
@@ -90,7 +90,7 @@ def commit(message: str):
 
     oid = data.hash_object(_commit.encode(), "commit")
 
-    data.update_ref('HEAD', oid)
+    data.update_ref("HEAD", oid)
 
     return oid
 
@@ -98,11 +98,11 @@ def commit(message: str):
 def checkout(oid: str):
     _commit = get_commit(oid)
     read_tree(_commit.tree)
-    data.update_ref('HEAD', oid)
+    data.update_ref("HEAD", oid)
 
 
 def create_tag(name: str, oid: str):
-    data.update_ref(f'/refs/tags/{name}', oid)
+    data.update_ref(f"/refs/tags/{name}", oid)
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
@@ -124,6 +124,10 @@ def get_commit(oid: str) -> "Commit":
 
     message = "\n".join(lines)
     return Commit(tree=tree, parent=parent, message=message)
+
+
+def get_oid(name: str) -> str:
+    return data.get_ref(name) or name
 
 
 def is_ignored(path: str) -> bool:
