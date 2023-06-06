@@ -24,6 +24,17 @@ def get_ref(ref: str) -> str:
             return f.read().strip()
 
 
+def iter_refs():
+    refs = ['HEAD']
+    for root, _, filenames in os.walk(f'{GIT_DIR}/refs/'):
+        # 拿到以 refs/ 开头的名字
+        root = os.path.relpath(root, GIT_DIR)
+        refs.extend(f'{root}/{name}' for name in filenames)
+
+    for refname in refs:
+        yield refname, get_ref(refname)
+
+
 def hash_object(data: bytes, type_: str = "blob") -> str:
     obj = type_.encode() + b"\x00" + data
     oid = hashlib.sha1(obj).hexdigest()
