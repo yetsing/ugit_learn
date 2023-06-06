@@ -82,7 +82,7 @@ def read_tree(tree_oid: str) -> None:
 def commit(message: str):
     _commit = f"tree {write_tree()}\n"
 
-    HEAD = data.get_ref("HEAD")
+    HEAD = data.get_ref("HEAD").value
     if HEAD:
         _commit += f"parent {HEAD}\n"
 
@@ -91,7 +91,7 @@ def commit(message: str):
 
     oid = data.hash_object(_commit.encode(), "commit")
 
-    data.update_ref("HEAD", oid)
+    data.update_ref("HEAD", data.RefValue(symbolic=False, value=oid))
 
     return oid
 
@@ -99,15 +99,15 @@ def commit(message: str):
 def checkout(oid: str):
     _commit = get_commit(oid)
     read_tree(_commit.tree)
-    data.update_ref("HEAD", oid)
+    data.update_ref("HEAD", data.RefValue(symbolic=False, value=oid))
 
 
 def create_tag(name: str, oid: str):
-    data.update_ref(f"/refs/tags/{name}", oid)
+    data.update_ref(f"/refs/tags/{name}", data.RefValue(symbolic=False, value=oid))
 
 
 def create_branch(name: str, oid: str):
-    data.update_ref(f"refs/heads/{name}", oid)
+    data.update_ref(f"refs/heads/{name}", data.RefValue(symbolic=False, value=oid))
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
