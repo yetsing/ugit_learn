@@ -1,6 +1,7 @@
 import itertools
 import operator
 import os
+import string
 import typing as t
 from collections import namedtuple
 
@@ -127,7 +128,23 @@ def get_commit(oid: str) -> "Commit":
 
 
 def get_oid(name: str) -> str:
-    return data.get_ref(name) or name
+    # Name is ref
+    refs_to_try = [
+        f'{name}',
+        f'refs/{name}',
+        f'refs/tags/{name}',
+        f'refs/heads/{name}',
+    ]
+    for ref in refs_to_try:
+        if data.get_ref(ref):
+            return data.get_ref(ref)
+
+    # Name is SHA1
+    is_hex = all(c in string.hexdigits for c in name)
+    if len(name) == 40 and is_hex:
+        return name
+
+    assert False, f'Unknown name {name}'
 
 
 def is_ignored(path: str) -> bool:
