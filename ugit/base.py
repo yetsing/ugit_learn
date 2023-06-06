@@ -102,7 +102,7 @@ def checkout(oid: str):
 
 
 def create_tag(name: str, oid: str):
-    ...
+    data.update_ref(f'/refs/tags/{name}', oid)
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
