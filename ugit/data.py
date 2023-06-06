@@ -19,7 +19,7 @@ def update_ref(ref: str, value: "RefValue", deref=True):
 
     assert value.value
     if value.symbolic:
-        value = f'ref: {value.value}'
+        value = f"ref: {value.value}"
     else:
         value = value.value
 
@@ -40,9 +40,9 @@ def _get_ref_internal(ref: str, deref: bool) -> t.Tuple[str, "RefValue"]:
         with open(ref_path) as f:
             value = f.read().strip()
 
-    symbolic = bool(value) and value.startswith('ref:')
+    symbolic = bool(value) and value.startswith("ref:")
     if symbolic:
-        value = value.split(':', 1)[1].strip()
+        value = value.split(":", 1)[1].strip()
         if deref:
             return _get_ref_internal(value, deref=True)
 

@@ -8,6 +8,11 @@ from collections import deque, namedtuple
 from . import data
 
 
+def init():
+    data.init()
+    data.update_ref("HEAD", data.RefValue(symbolic=True, value="refs/heads/master"))
+
+
 def write_tree(directory="."):
     entryies = []
     with os.scandir(directory) as it:
@@ -102,7 +107,7 @@ def checkout(name: str):
     read_tree(_commit.tree)
 
     if is_branch(name):
-        HEAD = data.RefValue(symbolic=True, value=f'refs/heads/{name}')
+        HEAD = data.RefValue(symbolic=True, value=f"refs/heads/{name}")
     else:
         HEAD = data.RefValue(symbolic=False, value=oid)
 
@@ -118,7 +123,7 @@ def create_branch(name: str, oid: str):
 
 
 def is_branch(branch: str) -> bool:
-    return data.get_ref(f'refs/heads/{branch}').value is not None
+    return data.get_ref(f"refs/heads/{branch}").value is not None
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
