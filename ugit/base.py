@@ -106,6 +106,10 @@ def create_tag(name: str, oid: str):
     data.update_ref(f"/refs/tags/{name}", oid)
 
 
+def create_branch(name: str, oid: str):
+    data.update_ref(f'refs/heads/{name}', oid)
+
+
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
 
 
