@@ -92,8 +92,7 @@ def commit(args: argparse.Namespace):
 
 
 def log(args: argparse.Namespace):
-    oid = args.oid
-    while oid:
+    for oid in base.iter_commits_and_parents({args.oid}):
         _commit = base.get_commit(oid)
 
         print(f"commit {oid}\n")

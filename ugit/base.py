@@ -3,7 +3,7 @@ import operator
 import os
 import string
 import typing as t
-from collections import namedtuple
+from collections import namedtuple, deque
 
 from . import data
 
@@ -128,18 +128,18 @@ def get_commit(oid: str) -> "Commit":
 
 
 def iter_commits_and_parents(oids: t.Iterable[str]):
-    oids = set(oids)
+    oids = deque(oids)
     visited = set()
 
     while oids:
-        oid = oids.pop()
+        oid = oids.popleft()
         if not oid or oid in visited:
             continue
         visited.add(oid)
         yield oid
 
         _commit = get_commit(oid)
-        oids.add(_commit.parent)
+        oids.appendleft(_commit.parent)
 
 
 def get_oid(name: str) -> str:
