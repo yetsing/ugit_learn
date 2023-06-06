@@ -124,10 +124,11 @@ def k(args: argparse.Namespace):
     dot = "digraph commits {\n"
 
     oids = set()
-    for refname, ref in data.iter_refs():
+    for refname, ref in data.iter_refs(deref=False):
         dot += f'"{refname}" [shape=note]\n'
         dot += f'"{refname}" -> "{ref.value}"\n'
-        oids.add(ref.value)
+        if not ref.symbolic:
+            oids.add(ref.value)
 
     for oid in base.iter_commits_and_parents(oids):
         _commit = base.get_commit(oid)
@@ -139,6 +140,6 @@ def k(args: argparse.Namespace):
     print(dot)
 
     with subprocess.Popen(
-        ["dot", "-Tgtk", "/dev/stdin"], stdin=subprocess.PIPE
+            ["dot", "-Tgtk", "/dev/stdin"], stdin=subprocess.PIPE
     ) as proc:
         proc.communicate(dot.encode())

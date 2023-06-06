@@ -158,7 +158,7 @@ def get_oid(name: str) -> str:
         f"refs/heads/{name}",
     ]
     for ref in refs_to_try:
-        if data.get_ref(ref):
+        if data.get_ref(ref, deref=False).value:
             return data.get_ref(ref).value
 
     # Name is SHA1
