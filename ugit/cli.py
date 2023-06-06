@@ -111,6 +111,14 @@ def tag(args: argparse.Namespace):
 
 
 def k(args: argparse.Namespace):
+    oids = set()
     for refname, ref in data.iter_refs():
         print(refname, ref)
+        oids.add(ref)
+
+    for oid in base.iter_commits_and_parents(oids):
+        _commit = base.get_commit(oid)
+        print(oid)
+        if _commit.parent:
+            print('Parent', _commit.parent)
     # todo visualize refs
