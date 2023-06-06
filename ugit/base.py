@@ -3,7 +3,7 @@ import operator
 import os
 import string
 import typing as t
-from collections import namedtuple, deque
+from collections import deque, namedtuple
 
 from . import data
 
@@ -107,7 +107,7 @@ def create_tag(name: str, oid: str):
 
 
 def create_branch(name: str, oid: str):
-    data.update_ref(f'refs/heads/{name}', oid)
+    data.update_ref(f"refs/heads/{name}", oid)
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
@@ -147,26 +147,26 @@ def iter_commits_and_parents(oids: t.Iterable[str]):
 
 
 def get_oid(name: str) -> str:
-    if name == '@':
-        name = 'HEAD'
+    if name == "@":
+        name = "HEAD"
 
     # Name is ref
     refs_to_try = [
-        f'{name}',
-        f'refs/{name}',
-        f'refs/tags/{name}',
-        f'refs/heads/{name}',
+        f"{name}",
+        f"refs/{name}",
+        f"refs/tags/{name}",
+        f"refs/heads/{name}",
     ]
     for ref in refs_to_try:
         if data.get_ref(ref):
-            return data.get_ref(ref)
+            return data.get_ref(ref).value
 
     # Name is SHA1
     is_hex = all(c in string.hexdigits for c in name)
     if len(name) == 40 and is_hex:
         return name
 
-    assert False, f'Unknown name {name}'
+    assert False, f"Unknown name {name}"
 
 
 def is_ignored(path: str) -> bool:
