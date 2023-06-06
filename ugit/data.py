@@ -16,6 +16,7 @@ RefValue = namedtuple("RefValue", ["symbolic", "value"])
 
 def update_ref(ref: str, value: "RefValue"):
     assert not value.symbolic
+    ref = _get_ref_internal(ref)[0]
     ref_path = f"{GIT_DIR}/{ref}"
     os.makedirs(os.path.dirname(ref_path), exist_ok=True)
     with open(ref_path, "w") as f:
@@ -23,16 +24,22 @@ def update_ref(ref: str, value: "RefValue"):
 
 
 def get_ref(ref: str) -> "RefValue":
+    return _get_ref_internal(ref)[1]
+
+
+def _get_ref_internal(ref: str) -> t.Tuple[str, "RefValue"]:
     ref_path = f"{GIT_DIR}/{ref}"
     value = None
     if os.path.isfile(ref_path):
         with open(ref_path) as f:
             value = f.read().strip()
 
-    if value and value.startswith("ref:"):
-        return get_ref(value.split(":", 1)[1].strip())
+    symbolic = bool(value) and value.startswith('ref:')
+    if symbolic:
+        value = value.split(':', 1)[1].strip()
+        return _get_ref_internal(value)
 
-    return RefValue(symbolic=False, value=value)
+    return ref, RefValue(symbolic=False, value=value)
 
 
 def iter_refs():
