@@ -137,7 +137,8 @@ def show(args):
         base.get_tree(parent_tree),
         base.get_tree(_commit.tree),
     )
-    print(result)
+    sys.stdout.flush()
+    sys.stdout.buffer.write(result)
 
 
 def checkout(args: argparse.Namespace):
