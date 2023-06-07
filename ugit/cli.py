@@ -81,6 +81,10 @@ def parse_args():
     reset_parser.set_defaults(func=reset)
     reset_parser.add_argument("commit", type=oid)
 
+    merge_parser = commands.add_parser("merge")
+    merge_parser.set_defaults(func=merge)
+    merge_parser.add_argument("commit", type=oid)
+
     return parser.parse_args()
 
 
@@ -215,3 +219,7 @@ def status(args: argparse.Namespace) -> None:
 
 def reset(args: argparse.Namespace) -> None:
     base.reset(args.commit)
+
+
+def merge(args: argparse.Namespace):
+    base.merge(args.commit)
