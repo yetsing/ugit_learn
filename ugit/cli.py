@@ -205,6 +205,13 @@ def status(args: argparse.Namespace) -> None:
     else:
         print(f"HEAD detached at {HEAD[:10]}")
 
+    print("\nChanges to be committed:\n")
+    HEAD_tree = HEAD and base.get_commit(HEAD).tree
+    for path, action in diff.iter_changed_files(
+        base.get_tree(HEAD_tree), base.get_working_tree()
+    ):
+        print(f"{action:>12}: {path}")
+
 
 def reset(args: argparse.Namespace) -> None:
     base.reset(args.commit)
