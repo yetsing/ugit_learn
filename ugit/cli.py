@@ -4,7 +4,7 @@ import subprocess
 import sys
 import textwrap
 
-from . import base, data
+from . import base, data, diff
 
 
 def main():
@@ -49,9 +49,9 @@ def parse_args():
     log_parser.set_defaults(func=log)
     log_parser.add_argument("oid", default="@", type=oid, nargs="?")
 
-    show_parser = commands.add_parser('show')
+    show_parser = commands.add_parser("show")
     show_parser.set_defaults(func=show)
-    show_parser.add_argument('oid', default='@', type=oid, nargs='?')
+    show_parser.add_argument("oid", default="@", type=oid, nargs="?")
 
     checkout_parser = commands.add_parser("checkout")
     checkout_parser.set_defaults(func=checkout)
@@ -70,12 +70,12 @@ def parse_args():
     k_parser = commands.add_parser("k")
     k_parser.set_defaults(func=k)
 
-    status_parser = commands.add_parser('status')
+    status_parser = commands.add_parser("status")
     status_parser.set_defaults(func=status)
 
-    reset_parser = commands.add_parser('reset')
+    reset_parser = commands.add_parser("reset")
     reset_parser.set_defaults(func=reset)
-    reset_parser.add_argument('commit', type=oid)
+    reset_parser.add_argument("commit", type=oid)
 
     return parser.parse_args()
 
@@ -108,10 +108,10 @@ def commit(args: argparse.Namespace):
 
 
 def _print_commit(oid, commit, refs=None):
-    refs_str = f' ({", ".join(refs)})' if refs else ''
-    print(f'commit {oid}{refs_str}\n')
-    print(textwrap.indent(commit.message, '    '))
-    print('')
+    refs_str = f' ({", ".join(refs)})' if refs else ""
+    print(f"commit {oid}{refs_str}\n")
+    print(textwrap.indent(commit.message, "    "))
+    print("")
 
 
 def log(args: argparse.Namespace):
@@ -128,7 +128,16 @@ def show(args):
     if not args.oid:
         return
     _commit = base.get_commit(args.oid)
+    parent_tree = None
+    if _commit.parent:
+        parent_tree = base.get_commit(_commit.parent).tree
+
     _print_commit(args.oid, _commit)
+    result = diff.diff_trees(
+        base.get_tree(parent_tree),
+        base.get_tree(_commit.tree),
+    )
+    print(result)
 
 
 def checkout(args: argparse.Namespace):
@@ -143,8 +152,8 @@ def branch(args: argparse.Namespace):
     if not args.name:
         current = base.get_branch_name()
         for _branch in base.iter_branch_names():
-            prefix = '*' if _branch == current else ' '
-            print(f'{prefix} {_branch}')
+            prefix = "*" if _branch == current else " "
+            print(f"{prefix} {_branch}")
     else:
         base.create_branch(args.name, args.start_point)
         print(f"Branch {args.name} created at {args.start_point[:10]}")
@@ -170,18 +179,18 @@ def k(args: argparse.Namespace):
     print(dot)
 
     with subprocess.Popen(
-            ["dot", "-Tx11", "/dev/stdin"], stdin=subprocess.PIPE
+        ["dot", "-Tx11", "/dev/stdin"], stdin=subprocess.PIPE
     ) as proc:
         proc.communicate(dot.encode())
 
 
 def status(args: argparse.Namespace) -> None:
-    HEAD = base.get_oid('@')
+    HEAD = base.get_oid("@")
     _branch = base.get_branch_name()
     if _branch:
-        print(f'On branch {_branch}')
+        print(f"On branch {_branch}")
     else:
-        print(f'HEAD detached at {HEAD[:10]}')
+        print(f"HEAD detached at {HEAD[:10]}")
 
 
 def reset(args: argparse.Namespace) -> None:

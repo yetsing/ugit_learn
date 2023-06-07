@@ -49,7 +49,7 @@ def _get_ref_internal(ref: str, deref: bool) -> t.Tuple[str, "RefValue"]:
     return ref, RefValue(symbolic=symbolic, value=value)
 
 
-def iter_refs(prefix='', deref=True):
+def iter_refs(prefix="", deref=True):
     refs = ["HEAD"]
     for root, _, filenames in os.walk(f"{GIT_DIR}/refs/"):
         # 拿到以 refs/ 开头的名字

@@ -115,7 +115,7 @@ def checkout(name: str):
 
 
 def reset(oid):
-    data.update_ref('HEAD', data.RefValue(symbolic=False, value=oid))
+    data.update_ref("HEAD", data.RefValue(symbolic=False, value=oid))
 
 
 def create_tag(name: str, oid: str):
@@ -127,8 +127,8 @@ def create_branch(name: str, oid: str):
 
 
 def iter_branch_names():
-    for refname, _ in data.iter_refs('refs/heads'):
-        yield os.path.relpath(refname, 'refs/heads')
+    for refname, _ in data.iter_refs("refs/heads"):
+        yield os.path.relpath(refname, "refs/heads")
 
 
 def is_branch(branch: str) -> bool:
@@ -136,13 +136,13 @@ def is_branch(branch: str) -> bool:
 
 
 def get_branch_name():
-    HEAD = data.get_ref('HEAD', deref=False)
+    HEAD = data.get_ref("HEAD", deref=False)
     if not HEAD.symbolic:
         return None
     # HEAD 是个 symbolic ref
     HEAD = HEAD.value
-    assert HEAD.startswith('refs/heads/')
-    return os.path.relpath(HEAD, 'refs/heads')
+    assert HEAD.startswith("refs/heads/")
+    return os.path.relpath(HEAD, "refs/heads")
 
 
 Commit = namedtuple("Commit", ["tree", "parent", "message"])
