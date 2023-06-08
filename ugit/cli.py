@@ -137,8 +137,8 @@ def show(args):
         return
     _commit = base.get_commit(args.oid)
     parent_tree = None
-    if _commit.parent:
-        parent_tree = base.get_commit(_commit.parent).tree
+    if _commit.parents:
+        parent_tree = base.get_commit(_commit.parents[0]).tree
 
     _print_commit(args.oid, _commit)
     result = diff.diff_trees(
@@ -189,8 +189,8 @@ def k(args: argparse.Namespace):
     for oid in base.iter_commits_and_parents(oids):
         _commit = base.get_commit(oid)
         dot += f'"{oid}" [shape=box style=filled label="{oid[:10]}"]\n'
-        if _commit.parent:
-            dot += f'"{oid}" -> "{_commit.parent}"\n'
+        for parent in _commit.parents:
+            dot += f'"{oid}" -> "{parent}"\n'
 
     dot += "}"
     print(dot)
