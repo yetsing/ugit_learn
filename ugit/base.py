@@ -100,7 +100,7 @@ def read_tree(tree_oid: str) -> None:
 def read_tree_merged(t_base, t_HEAD, t_other):
     _empty_current_directory()
     for path, blob in diff.merge_trees(
-            get_tree(t_base), get_tree(t_HEAD), get_tree(t_other)
+        get_tree(t_base), get_tree(t_HEAD), get_tree(t_other)
     ).items():
         os.makedirs(f"./{os.path.dirname(path)}", exist_ok=True)
         with open(path, "wb") as f:
@@ -149,12 +149,20 @@ def merge(other):
     HEAD = data.get_ref("HEAD").value
     assert HEAD
     merge_base = get_merge_base(other, HEAD)
-    c_base = get_commit(merge_base)
-    c_HEAD = get_commit(HEAD)
     c_other = get_commit(other)
+
+    # Handle fast-forward merge
+    if merge_base == HEAD:
+        # 当前分支没有任何提交变更，可以直接将 HEAD 指向 other 分支的最新提交
+        read_tree(c_other.tree)
+        data.update_ref("HEAD", data.RefValue(symbolic=False, value=other))
+        print("Fast-forward merge, no need to commit")
+        return
 
     data.update_ref("MERGE_HEAD", data.RefValue(symbolic=False, value=other))
 
+    c_base = get_commit(merge_base)
+    c_HEAD = get_commit(HEAD)
     read_tree_merged(c_base.tree, c_HEAD.tree, c_other.tree)
     print("Merged in working tree\nPlease commit")
 
