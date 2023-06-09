@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import shutil
 import typing as t
@@ -79,6 +80,19 @@ def iter_refs(prefix="", deref=True):
         ref = get_ref(refname, deref=deref)
         if ref.value:
             yield refname, ref
+
+
+@contextmanager
+def get_index():
+    index = {}
+    if os.path.isfile(f"{GIT_DIR}/index"):
+        with open(f"{GIT_DIR}/index") as f:
+            index = json.load(f)
+
+    yield index
+
+    with open(f"{GIT_DIR}/index", "w") as f:
+        json.dump(index, f)
 
 
 def hash_object(data: bytes, type_: str = "blob") -> str:

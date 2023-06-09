@@ -250,6 +250,9 @@ def iter_commits_and_parents(oids: t.Iterable[str]):
 
 
 def iter_objects_in_commits(oids):
+    # 这里传入的 oids 是 remote 仓库的，本地仓库可能不存在
+    # 那么就要先拉取下来，才能读取这个 oid 指向的文件的内容
+    # 所以这里要先返回这个 oid ，再读取
     # N.B. Must yield the oid before acccessing it (to allow caller to fetch it
     # if needed)
 
@@ -294,6 +297,16 @@ def get_oid(name: str) -> str:
         return name
 
     assert False, f"Unknown name {name}"
+
+
+def add(filenames):
+    with data.get_index() as index:
+        for filename in filenames:
+            # Normalize path
+            filename = os.path.relpath(filename)
+            with open(filename, "rb") as f:
+                oid = data.hash_object(f.read())
+            index[filename] = oid
 
 
 def is_ignored(path: str) -> bool:
